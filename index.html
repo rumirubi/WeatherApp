@@ -443,10 +443,12 @@
 
         for(let i=0; i<4; i++){
             if(data.list[i].weather[0].icon == "@xxd"){
-            $('#forecast').css('background-color', '#4AD7FB') //낮
+            $('#forecast').css('background-color', '#4AD7FB')
+            $('#forecast').css('color', '#120B20') //낮
         }
         else{
-            $('#forecast').css('background-color', '#1A1E3D') //밤
+            $('#forecast').css('background-color', '#1A1E3D')
+            $('#forecast').css('color', '#ffffff') //밤
         }}
     })
 
@@ -502,3 +504,4 @@
 </script>
 
 </html>
+
