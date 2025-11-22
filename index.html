@@ -427,9 +427,6 @@
             $('#icon3').attr('src', '.img/poka.png')
         } 
 
-        let icon = 
-        $('#icon').attr('src','https://openweathermap.org/img/wn/' + icon + '@2x.png')
-
         //낮밤에 따른 배경 색 변경
         if(data.weather[0].icon.main == "@xxd"){
             $('#hp').css('background-color', '#4AD7FB') //낮
@@ -502,20 +499,6 @@
             $('.task-text3').css('background-color', 'rgba(255,255,255,0.45)')
         })
     })
-
-    $.getJSON(urlf, function(data){
-        if(data.weather[0].main == "Rain" || data.weather[0].main == "Drizzle"){
-            $('#icon').attr('src', '/stand.png')
-        }
-        else if(data.weather[0].main == "Snow"){
-            $('#type1').text("아크릴스탠드")
-        }
-        else if(data.weather[0].main == "Clear"){
-            $('#type1').text("피규어")
-        }
-        else if(data.weather[0].main == "Clouds"){
-            $('#type1').text("아크릴스탠드")
-        } 
-    })
 </script>
+
 </html>
