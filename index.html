@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js" integrity="sha512-4F1cxYdMiAW98oomSLaygEwmCnIP38pb4Kx70yQYqRwLVCs3DbRumfBq82T08g/4LJ/smbFGFpmeFlQgoDccgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <div id="hp">
+        <div id="main">
+            <p id="city"></p>
+            <h1 id="weather"></h1>
+            <img id="code" />
+            <h2 id="temp"></h2>
+            <p id="temp_minmax"></p>
+        </div>
+
+        <div id="list">
+            <div class="task">
+                <span class="task-text1">우산 챙기기</span>
+                <button class="star1">☆</button>
+            </div>
+            <div class="task">
+                <span class="task-text2">과제 완료하기</span>
+                <button class="star2">☆</button>
+            </div>
+            <div class="task">
+                <span class="task-text3">운동 다녀오기 *필수*</span>
+                <button class="star3">☆</button>
+            </div>
+        </div>
+
+    <div id="forecast-panel" aria-hidden="true">
+        <div class="forecast-handle" role="button" aria-controls="forecast" aria-expanded="false"></div>
+        <div id="rc">
+            <p id="text1">이런 굿즈를 들고 나가세요!</p>
+            <div class="rc-cards">
+                <div class="rc-card">
+                    <div class="card-box">
+                        <img id="icon1" />
+                        <div id="type1"></div>
+                    </div>
+                </div>
+                <div class="rc-card">
+                    <div class="card-box">
+                        <img id="icon2" />
+                        <div id="type2"></div>
+                    </div>
+                </div>
+                <div class="rc-card">
+                    <div class="card-box">
+                        <img id="icon3" />
+                        <div id="type3"></div>
+                    </div>
+                </div>
+            </div>
+            <p id="text2">불안하시다면 따로 보관할 가방 등을 챙기는 것을 추천드립니다</p>
+        </div>
+        <div id="forecast"></div>
+    </div>
+    </div>
+</body>
+
+<style>
+    #hp{
+        position: relative;
+        width: 390px;
+        height: 844px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border: 1px solid black;
+        padding: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #4AD7FB;
+        }
+    #main{
+        width: 100%;
+        color: #120B20;
+    }
+    #city{
+        font-size: 40px;
+        font-weight: bolder;
+        margin: 0;
+    }
+    #weather{
+        font-size: 24px;
+        font-weight: lighter;
+        margin: 0;
+    }
+    #code{
+        width: 252px;
+        height: 252px;
+    }
+    #temp{
+        font-size: 64px;
+        font-weight: bolder;
+        margin: 0;
+    }
+    #temp_minmax{
+        font-size: 20px;
+        font-weight: lighter;
+        margin-top: 0;
+        margin-bottom: 64px;
+    }
+
+    #list{
+        width: 100%;
+    }
+    #list .task{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin: 10px 0;
+    }
+    .task-text1, .task-text2, .task-text3{
+        width: 216px;
+        height: 45px;
+        background: rgba(255,255,255,0.45);
+        border-radius: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 16px;
+        font-weight: lighter;
+    }
+    .star1, .star2, .star3{
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255,255,255,0.45);
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+    }
+    .star1,.star2,.star3 .active{
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255,255,255,0.35);
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+    }
+
+    #forecast-panel{
+        width: 100%;
+        position: absolute;
+            left: 0;
+            right: 0;
+        bottom: 12px;
+        height: 90%;
+        background: #544F60;
+        color: #fff;
+        border-radius: 14px 14px 6px 6px;
+        padding-top: 18px; /* 손잡이 공간 */
+        overflow: auto;
+        transform: translateY(calc(100% - 36px)); /* 닫힌 상태: 패널 대부분 숨기고 손잡이(약 36px)만 보이게 */
+        transition: transform 0.35s cubic-bezier(.2,.9,.2,1);
+        z-index: 30; /* hp 내부에서 위에 보이게 */
+    }
+    #forecast-panel.open{
+        transform: translateY(0);
+    }
+    #forecast-panel{
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0; /* 아래 여백 제거 */
+        height: 90%;
+        max-height: 100%;
+        background: #2f2f3a;
+        color: #fff;
+        border-radius: 14px 14px 0 0; /* 하단 라운드 제거하여 아래와 맞춤 */
+    }
+
+    .forecast-handle{
+        width: 72px;
+        height: 10px;
+        background: rgba(255,255,255,0.6);
+        border-radius: 10px;
+        margin: 0 auto;
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+        z-index: 40; /* 손잡이를 항상 위로 보이게 */
+    }
+
+    /* 내부 forecast 항목 스타일 (간단한 카드형) */
+    #forecast{
+        padding: 0px 15px 20px 15px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    #forecast .forecast-card{
+        width: 170px;
+        height: 225px;
+        background: #4ad7fb;
+        color: #082033;
+        border-radius: 15px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+    #forecast .fc-date{
+        font-size: 12px;
+        color: rgba(8,32,51,0.9);
+        font-weight: 600;
+    }
+    #forecast .fc-time{
+        font-size: 24px;
+        font-weight: 800;
+        color: rgba(8,32,51,0.95);
+        line-height: 1;
+    }
+    #forecast .fc-icon{
+        width: 91px;
+        height: 91px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto;
+    }
+    #forecast .fc-weather{
+        font-size: 13px;
+        color: rgba(8,32,51,0.85);
+    }
+    #forecast .fc-temp{
+        font-size: 26px;
+        font-weight: bolder;
+        margin-top: 0px;
+    }
+    #forecast .fc-range{
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        background: rgba(255,255,255,0.9);
+        color: #082033;
+        padding: 6px 10px;
+        border-radius: 18px;
+        margin-top: 5px;
+        font-size: 12px;
+        opacity: 45%;
+    }
+    #forecast .fc-range .fc-min,
+    #forecast .fc-range .fc-max{
+        font-weight: 300;
+    }
+
+    /* recommend의 상자 */
+    #rc{
+        width: 368px;
+        height: 231px;
+        background: #fff;
+        opacity: 0.4;
+        border-radius: 30px;
+        margin: 20px auto; /* 수평 가운데 정렬 */
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between; /* 상단 제목 / 가운데 카드 / 하단 설명 배치 */
+    }
+    #rc #text1{
+        font-size: 20px;
+        font-weight: 700;
+        color: #1b1b1f;
+        margin-top: 19px;
+        margin-bottom: 0;
+    }
+    .rc-cards{
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+        justify-content: center;
+        width: 100%;
+        margin-top: 11px;
+        margin-bottom: 11px;
+    }
+    .rc-card{
+        width: 101px;
+        height: 134px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .rc-card .card-box{
+        width: 101px;
+        height: 134px;
+        background: rgb(27,26,32,0.7);
+        border-radius: 12px;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+    }
+    #type1, #type2, #type3{
+        position: static;
+        font-size: 13px;
+        color: #fff;
+        background: #979699;
+        padding: 4px 0 4px 0;
+        border-radius: 10px;
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 10px;
+        width: 85px;
+        height: 16px;
+    }
+    #rc #text2{
+        font-size: 12px;
+        color: rgba(0,0,0,0.6);
+        margin-top: 0;
+        margin-bottom: 18px;
+    }
+    #icon1, #icon2, #icon3{
+        position: absolute;
+        top: 10px;
+        width: 80px;
+        height: 80px;
+    }
+</style>
+
+<script>
+    //날씨정보
+    let url = 'https://api.openweathermap.org/data/2.5/weather?lat=51.50858&lon=-0.1257&appid=74eba87a77a6a54fdaddf21512fd96fe&units=metric'
+
+    $.getJSON(url, function(data){
+        // console.log(data)       //데이터를 받아오고나서 실행될 부분
+
+        $('#city').text(data.name)
+        $('#weather').text(data.weather[0].main)
+        $('#temp').text(data.main.temp + '˚')
+        $('#temp_minmax').text('↑'+data.main.temp_min + '˚ ' + ' ↓' + data.main.temp_max + '˚')
+
+        let code = data.weather[0].icon;    //04n
+        $('#code').attr('src','https://openweathermap.org/img/wn/' + code + '@2x.png')
+        // $('#icon').attr('src','./' + code + '@2x.png')
+        })
+        
+    let urlf = 'https://api.openweathermap.org/data/2.5/forecast?lat=51.50858&lon=-0.1257&appid=74eba87a77a6a54fdaddf21512fd96fe&units=metric'
+
+    $.getJSON(urlf, function(data){
+        console.log(data)
+        
+        for(let i=0; i<4; i++){
+            // 날짜/요일을 첫줄, 시간을 둘째줄로 분리
+            let datePart = moment(data.list[i].dt*1000).format('MM.DD ddd') // e.g. 11.18 Tue
+            let timePart = moment(data.list[i].dt*1000).format('h A') // e.g. 3 AM
+            let icon = data.list[i].weather[0].icon
+            let iconUrl = 'https://openweathermap.org/img/wn/' + icon + '@2x.png'
+
+            let dom = $('<div class="forecast-card"></div>')
+            dom.append('<div class="fc-date">'+datePart+'</div>')
+            dom.append('<div class="fc-time">'+timePart+'</div>')
+            dom.append('<img class="fc-icon" src="'+iconUrl+'" alt="'+(data.list[i].weather[0].description||'icon')+'"/>')
+                dom.append('<div class="fc-temp">'+data.list[i].main.temp + '˚' + '</div>')
+                // min / max 박스 추가
+                dom.append('<div class="fc-range"><span class="fc-min">↑'+Math.round(data.list[i].main.temp_min)+'˚</span><span class="fc-max">↓'+Math.round(data.list[i].main.temp_max)+'˚</span></div>')
+
+            $('#forecast').append(dom)
+        }
+
+        // 핸들 클릭으로 패널 토글
+        $('.forecast-handle').off('click').on('click', function(){
+            const panel = $('#forecast-panel')
+            panel.toggleClass('open')
+            const opened = panel.hasClass('open')
+            $('.forecast-handle').attr('aria-expanded', opened)
+            panel.attr('aria-hidden', !opened)
+        })
+    })
+
+    $.getJSON(url, function(data){
+        
+        //메인 날씨에 따라서 들고 다닐 굿즈 추천
+        if(data.weather[0].main == "Rain" || data.weather[0].main == "Drizzle"){
+            $('#type1').text("아크릴스탠드")
+            $('#type2').text("아크릴 키링")
+            $('#type3').text("포토카드")
+            $('#icon1').attr('src', './img/stand.png')
+            $('#icon2').attr('src', './img/keyring.png')
+            $('#icon3').attr('src', './img/poka.png')
+        }
+        else if(data.weather[0].main == "Snow"){
+            $('#type1').text("아크릴스탠드")
+            $('#type2').text("아크릴 키링")
+            $('#type3').text("포토카드")
+            $('#icon1').attr('src', './img/stand.png')
+            $('#icon2').attr('src', './img/keyring.png')
+            $('#icon3').attr('src', './img/poka.png')
+        }
+        else if(data.weather[0].main == "Clear"){
+            $('#type1').text("피규어")
+            $('#type2').text("(누이)인형류")
+            $('#type3').text("아크릴스탠드")
+            $('#icon1').attr('src', './img/figure.png')
+            $('#icon2').attr('src', './img/bear.png')
+            $('#icon3').attr('src', './img/stand.png')
+        }
+        else if(data.weather[0].main == "Clouds"){
+            $('#type1').text("아크릴스탠드")
+            $('#type2').text("(누이)인형류")
+            $('#type3').text("포토카드")
+            $('#icon1').attr('src', '.img/stand.png')
+            $('#icon2').attr('src', '.img/bear.png')
+            $('#icon3').attr('src', '.img/poka.png')
+        } 
+
+        let icon = 
+        $('#icon').attr('src','https://openweathermap.org/img/wn/' + icon + '@2x.png')
+
+        //낮밤에 따른 배경 색 변경
+        if(data.weather[0].icon.main == "@xxd"){
+            $('#hp').css('background-color', '#4AD7FB') //낮
+            $('#main').css('color', '#120B20')
+            $('.task').css('color', '#120B20')
+            $('.star').css('color', '#120B20')
+        }
+        else{
+            $('#hp').css('background-color', '#1A1E3D') //밤
+            $('#main').css('color', '#ffffff')
+            $('.task').css('color', '#ffffff')
+            $('.star').css('color', '#ffffff')
+        }
+
+        for(let i=0; i<4; i++){
+            if(data.list[i].weather[0].icon == "@xxd"){
+            $('#forecast').css('background-color', '#4AD7FB') //낮
+        }
+        else{
+            $('#forecast').css('background-color', '#1A1E3D') //밤
+        }}
+    })
+
+    $.getJSON(urlf, function(data){
+        //별 클릭 시 활성화
+        $('.star1').on('click', function(){
+            $(this).toggleClass('active')
+            if($(this).hasClass('active')){
+                $(this).text('★')
+            } else {
+                $(this).text('☆')
+            }
+        })
+        $('.star2').on('click', function(){
+            $(this).toggleClass('active')
+            if($(this).hasClass('active')){
+                $(this).text('★')
+            } else {
+                $(this).text('☆')
+            }
+        })
+        $('.star3').on('click', function(){
+            $(this).toggleClass('active')
+            if($(this).hasClass('active')){
+                $(this).text('★')
+            } else {
+                $(this).text('☆')
+            }
+        })
+
+        $('.star1').hover(function(){
+            $(this).css('background-color', '#ffffff')
+            $('.task-text1').css('background-color', '#ffffff')
+        }, function(){
+            $(this).css('background-color', 'rgba(255,255,255,0.45)')
+            $('.task-text1').css('background-color', 'rgba(255,255,255,0.45)')
+        })
+        $('.star2').hover(function(){
+            $(this).css('background-color', '#ffffff')
+            $('.task-text2').css('background-color', '#ffffff')
+        }, function(){
+            $(this).css('background-color', 'rgba(255,255,255,0.45)')
+            $('.task-text2').css('background-color', 'rgba(255,255,255,0.45)')
+        })
+        $('.star3').hover(function(){
+            $(this).css('background-color', '#ffffff')
+            $('.task-text3').css('background-color', '#ffffff')
+        }, function(){
+            $(this).css('background-color', 'rgba(255,255,255,0.45)')
+            $('.task-text3').css('background-color', 'rgba(255,255,255,0.45)')
+        })
+    })
+
+    $.getJSON(urlf, function(data){
+        if(data.weather[0].main == "Rain" || data.weather[0].main == "Drizzle"){
+            $('#icon').attr('src', '/stand.png')
+        }
+        else if(data.weather[0].main == "Snow"){
+            $('#type1').text("아크릴스탠드")
+        }
+        else if(data.weather[0].main == "Clear"){
+            $('#type1').text("피규어")
+        }
+        else if(data.weather[0].main == "Clouds"){
+            $('#type1').text("아크릴스탠드")
+        } 
+    })
+</script>
+</html>
